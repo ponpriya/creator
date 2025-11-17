@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Search Page</title>
+    <link rel="stylesheet" type="text/css" href="/styles.css">
+</head>
+<body>
+    <h1>Search Page</h1>
+    <form action="#" th:action="@{/creator/search}" method="get">
+        <input type="text" name="zipcode" placeholder="Search..." required>
+        <button type="submit">Search</button>
+    </form>
+    <!-- Display search results if available -->
+    <div th:if="${creators != null and not #lists.isEmpty(creators)}">
+        <h3>Creators:</h3>
+        <ul>
+            <li th:each="item : ${creators}" th:text="${item.name}">Item name</li>
+            <li th:each="item : ${creators}" th:text="${item.address}">Item address</li>
+            <li th:each="item : ${creators}" th:text="${item.zipcode}">Item zipcode</li>
+            <li th:each="item : ${creators}" th:text="${item.phone}">Item phone</li>
+        </ul>
+    </div>
+    
+    <!-- Display message if no results found but a query was made -->
+    <div th:if="${creators != null and #lists.isEmpty(creators)}">
+        <p>No results found for query: <strong th:text="${param.zipcode}"></strong></p>
+    </div>
+</body>
+</html>

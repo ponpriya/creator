@@ -24,6 +24,19 @@ public class CreatorService {
         CreatorResponse creatorResponse = mapper.map(creator, CreatorResponse.class);
         return creatorResponse;
     }
+    /**
+    public List<CreatorResponse> searchCreatorsByZipcode(String zipcode) {
+        List<Creator> creatorsByZip = creatorRepository.findAllByZipcode(zipcode);
+        List<CreatorResponse> creatorResponses = creatorsByZip.stream()
+                .map(creator -> mapper.map(creator, CreatorResponse.class))
+                .collect(Collectors.toList());
+        return creatorResponses;
+    }**/
+
+    public List<Creator> searchCreatorsByZipcode(String zipcode) {
+        List<Creator> creators = creatorRepository.findAllByZipcode(zipcode);    
+        return creators;
+    }
 
     public List<CreatorResponse> getAllCreators() {
         List<Creator> creators = creatorRepository.findAll();
