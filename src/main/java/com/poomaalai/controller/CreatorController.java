@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
-@RequestMapping("/creators")
+@RequestMapping("/")
 public class CreatorController {
 
 
