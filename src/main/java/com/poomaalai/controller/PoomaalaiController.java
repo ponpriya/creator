@@ -16,7 +16,7 @@ import org.springframework.ui.Model;
 
 
 @Controller
-@RequestMapping("/creator")
+@RequestMapping("/")
 public class PoomaalaiController {
 
 
