@@ -1,47 +1,77 @@
 package com.poomaalai.controller;
 
-import com.poomaalai.dto.CreatorResponse;
-import com.poomaalai.service.CreatorService;
-
-import ch.qos.logback.core.model.Model;
-
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;    
+
+import com.poomaalai.dto.CreatorDto;
+import com.poomaalai.dto.RegisterCreatorDto;
+import com.poomaalai.entity.Creator;
+import com.poomaalai.service.CreatorService;
 
 
-@RestController
-@RequestMapping("/")
+@Controller
+@RequestMapping("/creator")
 public class CreatorController {
-
-
 
     @Autowired
     private CreatorService creatorService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<CreatorResponse> getCreatorById(@PathVariable int id) {   
+    public ResponseEntity<CreatorDto> getCreatorById(@PathVariable int id) {   
         
-        CreatorResponse creator = creatorService.getCreatorById(id);
-        return ResponseEntity.status(HttpStatus.OK).body(creator);
+        CreatorDto creatorDto = creatorService.getCreatorById(id);
+        return ResponseEntity.status(HttpStatus.OK).body(creatorDto);
         
     }
     @GetMapping
-    public List<CreatorResponse> fetchAllProducts(){
+    public List<CreatorDto> fetchAllCreators(){
         return creatorService.getAllCreators();
     }
-/** 
-    @GetMapping("/search")
-    public List<CreatorResponse> searchCreatorsByZipcode(@RequestParam("zipcode") String zipcode,Model model){
-        return creatorService.searchCreatorsByZipcode(zipcode);
+
+    @GetMapping("/register")
+    public String showRegistrationForm(Model model) {
+        model.addAttribute("creator", new RegisterCreatorDto());
+        return "register";
     }
-**/
+    @PostMapping("/register")
+    public String registerCreator(@ModelAttribute("creator") RegisterCreatorDto registerCreatorDto) {
+        if (!registerCreatorDto.getPassword().equals(registerCreatorDto.getConfirmPassword())) {
+            return "redirect:/creator/register?error=passwordmismatch";
+        }
+        creatorService.registerNewCreator(registerCreatorDto);
+        return "dashboard";
+    }
+    @GetMapping("/login")
+    public String showLoginForm() {
+        return "login";
+    }
+    @GetMapping("/dashboard")
+    public String showDashboard(Model model) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getPrincipal())) {
+            return "redirect:/creator/login";
+        }
+        String email = auth.getName();
+        Creator owner = creatorService.getCreatorByEmail(email);
+        if (owner == null) {
+            model.addAttribute("creatorStoreDtos", List.of());
+            return "dashboard";
+        }
+        model.addAttribute("creator", owner);
+        model.addAttribute("creatorStoreDtos", creatorService.getAllCreatorStoresByOwnerEmail(email));
+        return "dashboard";
+    }
 }
 
