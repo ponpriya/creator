@@ -29,9 +29,12 @@ public class SecurityConfig{
                     "/", 
                     "/search",
                     "/register",
+                    "/logout",
                     "/creator/register",
                     "/creator/login",
+                    "/creator/logout",
                     "/creator-store/search",
+                    "/creator-store/add",
                     "/favicon.ico",
                     "/css/**",
                     "/js/**",
@@ -48,6 +51,8 @@ public class SecurityConfig{
             )
             .logout(logout -> 
                 logout
+                .logoutUrl("/creator/logout")
+                .logoutSuccessUrl("/creator/login?logout")
                 .permitAll()
             )
             .csrf(csrf -> csrf.disable())

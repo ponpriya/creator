@@ -8,13 +8,21 @@
 </head>
 <body>
     <h1>Creator Dashboard</h1>
+    
+    <div>
+        <a th:href="@{/creator-store/add}">Add New Store</a>
+        &nbsp;
+        <form action="#" th:action="@{/creator/logout}" method="post" style="display:inline;">
+            <button type="submit">Logout</button>
+        </form>
+    </div>
 
     <!-- Display all creator stores owned by logged in creator -->
     <div th:if="${creatorStoreDtos != null and not #lists.isEmpty(creatorStoreDtos)}">
         <h3>My Stores</h3>
         <div th:unless="${creatorStoreDtos.isEmpty()}">
                 <ul th:each="store : ${creatorStoreDtos}">
-                    <li th:text="${store.name} + ' - ' + ${store.address} + ${store.zipcode} + ${store.phone}"></li>
+                    <li th:text="${store.name} + ' - ' + ${store.address} + ${store.zipcode} + ' Ph: ' + ${store.phone}"></li>
                 </ul>
         </div>
     </div>

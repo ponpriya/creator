@@ -17,7 +17,7 @@
         <h3>Creators:</h3>
        <div th:unless="${creatorStoreDtos.isEmpty()}">
                 <ul th:each="store : ${creatorStoreDtos}">
-                    <li th:text="${store.name} + ' - ' + ${store.address} + ${store.zipcode} + ${store.phone}"></li>
+                    <li th:text="${store.name} + ' - ' + ${store.address} + ${store.zipcode} + ' Ph: ' + ${store.phone}"></li>
                 </ul>
         </div>
     </div>

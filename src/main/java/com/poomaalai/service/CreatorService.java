@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 
 import com.poomaalai.dto.CreatorDto;
 import com.poomaalai.dto.CreatorStoreDto;
-import com.poomaalai.dto.LoginCreatorDto;
 import com.poomaalai.dto.RegisterCreatorDto;
 import com.poomaalai.entity.Creator;
 import com.poomaalai.entity.CreatorStore;
@@ -88,16 +87,5 @@ public class CreatorService  implements UserDetailsService {
                 .password(creator.getPassword()) // The stored password is already Bcrypt-hashed
                 .authorities(Collections.emptyList())
                 .build();
-    }
-    
-    public void authenticateCreator(LoginCreatorDto loginCreatorDto) {
-        // Authentication logic can be implemented here if needed
-        Creator creator =creatorRepository.findByEmail(loginCreatorDto.getEmail())
-            .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + loginCreatorDto.getEmail()));
-        if (new BCryptPasswordEncoder().matches(loginCreatorDto.getPassword(), creator.getPassword())) {
-            
-        } else {
-            throw new UsernameNotFoundException("Invalid password for email: " + loginCreatorDto.getEmail());
-        }
     }
 }
