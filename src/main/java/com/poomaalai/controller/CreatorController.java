@@ -46,7 +46,7 @@ public class CreatorController {
         if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getPrincipal())) {
             model.addAttribute("creator", new RegisterCreatorDto());
             model.addAttribute("registrationSuccess", false);
-        return "register";
+            return "register";
         }
         return "redirect:/creator/dashboard";  
     }
