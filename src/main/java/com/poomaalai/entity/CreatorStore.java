@@ -35,6 +35,19 @@ public class CreatorStore {
     @Column(name = "zipcode")
     private String zipcode;
 
+    @Column(name = "instagram_handle")
+    private String instagramHandle;
+
+    @Column(name = "facebook_handle")
+    private String facebookHandle;
+
+    @Column(name = "youtube_handle")
+    private String youtubeHandle;
+
+    
+    
+
+
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id")

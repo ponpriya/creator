@@ -20,11 +20,27 @@
         <div th:if="${creatorStoreDtos != null and not #lists.isEmpty(creatorStoreDtos)}">
             <h3>Creators:</h3>
             <div th:unless="${creatorStoreDtos.isEmpty()}">
-                <ul th:each="store : ${creatorStoreDtos}">
-                    <li
-                        th:text="${store.name} + ' - ' + ${store.address} + ${store.zipcode} + ' Ph: ' + ${store.phone}">
-                    </li>
-                </ul>
+                     <ul th:each="store : ${creatorStoreDtos}">
+                          <li>
+                                <span th:text="${store.name}"></span>
+                                <span> - </span>
+                                <span th:text="${store.address}"></span>
+                                <span th:text="' ' + ${store.zipcode}"></span>
+                          </li>
+                          <li>
+                                <a th:if="${store.instagramHandle != null and store.instagramHandle != ''}"
+                                    th:href="@{https://www.instagram.com/{handle}(handle=${store.instagramHandle})}" target="_blank">Instagram</a>
+                                <span th:if="${store.instagramHandle != null and store.instagramHandle != ''}"> | </span>
+                                <a th:if="${store.facebookHandle != null and store.facebookHandle != ''}"
+                                    th:href="@{https://www.facebook.com/{handle}(handle=${store.facebookHandle})}" target="_blank">Facebook</a>
+                                <span th:if="${store.facebookHandle != null and store.facebookHandle != ''}"> | </span>
+                                <a th:if="${store.youtubeHandle != null and store.youtubeHandle != ''}"
+                                    th:href="@{https://www.youtube.com/{handle}(handle=${store.youtubeHandle})}" target="_blank">YouTube</a>
+                                <span th:if="${store.youtubeHandle != null and store.youtubeHandle != ''}"> | </span>
+                                <a th:if="${store.phone != null and store.phone != ''}"
+                                    th:href="@{https://api.whatsapp.com/send?(phone=${store.phone})}" target="_blank">WhatsApp</a>
+                          </li>
+                     </ul>
             </div>
         </div>
         <!-- Display message if no results found but a query was made -->

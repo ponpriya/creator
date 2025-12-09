@@ -12,4 +12,7 @@ public class CreatorStoreDto {
     private String phone;
     private String zipcode;
     private Creator owner;
+    private String instagramHandle;
+    private String facebookHandle;
+    private String youtubeHandle;
 }
