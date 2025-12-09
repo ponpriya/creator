@@ -42,16 +42,22 @@ public class CreatorController {
 
     @GetMapping("/register")
     public String showRegistrationForm(Model model) {
-        model.addAttribute("creator", new RegisterCreatorDto());
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getPrincipal())) {
+            model.addAttribute("creator", new RegisterCreatorDto());
+            model.addAttribute("registrationSuccess", false);
         return "register";
+        }
+        return "redirect:/creator/dashboard";  
     }
     @PostMapping("/register")
-    public String registerCreator(@ModelAttribute("creator") RegisterCreatorDto registerCreatorDto) {
+    public String registerCreator(@ModelAttribute("creator") RegisterCreatorDto registerCreatorDto,Model model) {
         if (!registerCreatorDto.getPassword().equals(registerCreatorDto.getConfirmPassword())) {
             return "redirect:/creator/register?error=passwordmismatch";
         }
         creatorService.registerNewCreator(registerCreatorDto);
-        return "dashboard";
+        model.addAttribute("registrationSuccess", true);
+        return "register";
     }
     @GetMapping("/login")
     public String showLoginForm() {
@@ -69,6 +75,8 @@ public class CreatorController {
             model.addAttribute("creatorStoreDtos", List.of());
             return "dashboard";
         }
+        System.out.println("Logged in creator: " + owner.getEmail());
+        System.out.println("Logged in creator email: " + email);
         model.addAttribute("creator", owner);
         model.addAttribute("creatorStoreDtos", creatorService.getAllCreatorStoresByOwnerEmail(email));
         return "dashboard";

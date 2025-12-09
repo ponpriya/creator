@@ -27,6 +27,7 @@ public class SecurityConfig{
             .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                 .requestMatchers(
                     "/", 
+                    "/error",
                     "/search",
                     "/register",
                     "/logout",
@@ -55,7 +56,6 @@ public class SecurityConfig{
                 .logoutSuccessUrl("/creator/login?logout")
                 .permitAll()
             )
-            .csrf(csrf -> csrf.disable())
             .authenticationProvider(authenticationProvider());
         return http.build();
     }

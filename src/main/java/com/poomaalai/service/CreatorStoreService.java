@@ -54,6 +54,7 @@ public class CreatorStoreService {
     }
     public void addCreatorStore(CreatorStoreDto creatorStoreDto) {
         CreatorStore creatorStore = mapper.map(creatorStoreDto, CreatorStore.class);
+        System.out.println("Saving Creator Store for owner: " + creatorStore.getOwner());
         creatorStoreRepository.save(creatorStore);
     }   
 

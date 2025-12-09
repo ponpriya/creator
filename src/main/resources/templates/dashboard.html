@@ -1,35 +1,45 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <title>Creator Registration</title>
-    <link rel="stylesheet" type="text/css" th:href="@{/styles.css}">
-     <link rel="icon" type="image/x-icon" th:href="@{/favicon.ico}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/styles.css}">
+    <link rel="icon" type="image/x-icon" th:href="@{/favicon.ico}">
 </head>
+
 <body>
-    <h1>Creator Dashboard</h1>
-    
-    <div>
-        <a th:href="@{/creator-store/add}">Add New Store</a>
-        &nbsp;
+    <div class="poomaalai-container">
+        <img th:src="@{/images/poomaalai_logo.jpg}" alt="Poomaalai Logo" class="poomaalai-logo">
+        <h1>Creator Dashboard</h1>
+
+        <div th:if="${registrationSuccess}">
+            <p>You are already registered and logged in.</p>
+        </div>
+        <form action="#" th:action="@{/creator-store/add}" method="get" style="display:inline;">
+            <button type="submit">Add Store</button>
+        </form>
         <form action="#" th:action="@{/creator/logout}" method="post" style="display:inline;">
             <button type="submit">Logout</button>
         </form>
-    </div>
 
-    <!-- Display all creator stores owned by logged in creator -->
-    <div th:if="${creatorStoreDtos != null and not #lists.isEmpty(creatorStoreDtos)}">
-        <h3>My Stores</h3>
-        <div th:unless="${creatorStoreDtos.isEmpty()}">
+
+        <!-- Display all creator stores owned by logged in creator -->
+        <div th:if="${creatorStoreDtos != null and not #lists.isEmpty(creatorStoreDtos)}">
+            <h3>My Stores</h3>
+            <div th:unless="${creatorStoreDtos.isEmpty()}">
                 <ul th:each="store : ${creatorStoreDtos}">
-                    <li th:text="${store.name} + ' - ' + ${store.address} + ${store.zipcode} + ' Ph: ' + ${store.phone}"></li>
+                    <li
+                        th:text="${store.name} + ' - ' + ${store.address} + ${store.zipcode} + ' Ph: ' + ${store.phone}">
+                    </li>
                 </ul>
+            </div>
         </div>
-    </div>
-    
-    <!-- Display message if no results found but a query was made -->
-    <div th:if="${creatorStoreDtos != null and #lists.isEmpty(creatorStoreDtos)}">
-        <p>No results found for query: <strong th:text="${param.zipcode}"></strong></p>
+
+        <!-- Display message if no results found but a query was made -->
+        <div th:if="${creatorStoreDtos != null and #lists.isEmpty(creatorStoreDtos)}">
+            <p>No results found for query: <strong th:text="${param.zipcode}"></strong></p>
+        </div>
     </div>
 </body>
 
