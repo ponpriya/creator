@@ -51,7 +51,20 @@ public class CreatorController {
         return "redirect:/creator/dashboard";  
     }
     @PostMapping("/register")
-    public String registerCreator(@ModelAttribute("creator") RegisterCreatorDto registerCreatorDto,Model model) {
+    public String registerCreator(@org.springframework.validation.annotation.Validated @org.springframework.web.bind.annotation.ModelAttribute("creator") @jakarta.validation.Valid RegisterCreatorDto registerCreatorDto,
+            org.springframework.validation.BindingResult bindingResult, Model model) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("registrationSuccess", false);
+            return "register";
+        }
+        // Normalize and validate email uniqueness
+        String email = registerCreatorDto.getEmail() == null ? null : registerCreatorDto.getEmail().trim().toLowerCase();
+        registerCreatorDto.setEmail(email);
+
+        if (email != null && creatorService.getCreatorByEmail(email) != null) {
+            return "redirect:/creator/register?error=emailexists";
+        }
+
         if (!registerCreatorDto.getPassword().equals(registerCreatorDto.getConfirmPassword())) {
             return "redirect:/creator/register?error=passwordmismatch";
         }

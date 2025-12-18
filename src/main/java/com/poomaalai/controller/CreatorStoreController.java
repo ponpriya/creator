@@ -47,7 +47,8 @@ public class CreatorStoreController {
         return "addStore";
     }
     @PostMapping("/add")
-    public String addStore(@ModelAttribute("creatorStore") CreatorStoreDto creatorStoreDto, Model model) {
+    public String addStore(@org.springframework.web.bind.annotation.ModelAttribute("creatorStore") @jakarta.validation.Valid CreatorStoreDto creatorStoreDto,
+            org.springframework.validation.BindingResult bindingResult, Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getPrincipal())) {
             return "redirect:/creator/login";
@@ -57,7 +58,12 @@ public class CreatorStoreController {
         if (owner == null) {
             return "redirect:/creator/login";
         }
-        
+
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("creator", owner);
+            return "addStore";
+        }
+
         // Set the owner on the creatorStoreDto before saving
         creatorStoreDto.setOwner(owner);
         creatorStoreService.addCreatorStore(creatorStoreDto);
