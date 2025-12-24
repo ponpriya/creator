@@ -12,6 +12,9 @@
     <div class="poomaalai-container">
         <img th:src="@{/images/poomaalai_logo.jpg}" alt="Poomaalai Logo" class="poomaalai-logo">
         <h1>Creator Login</h1>
+        <div th:if="${alreadyRegistered}">
+            <p>You are already registered. Please log in.</p>
+        </div>
 
         <form action="#" th:action="@{/creator/login}" method="post">
             <input type="text" name="username" placeholder="email" required>
@@ -19,8 +22,10 @@
             <button type="submit">Login</button>
         </form>
 
-        <div th:if="${param.error}">
-            <p th:text="'Error: ' + ${param.error}"></p>
+        <p>Don't have an account?</p>
+        <a th:href="@{/creator/register}">Register as a new creator</a>
+        <div th:if="${loginError}">
+            <p>Login error! Please call support</p>
         </div>
     </div>
 </body>

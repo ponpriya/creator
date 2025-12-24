@@ -72,6 +72,9 @@ public class CreatorService  implements UserDetailsService {
         return creatorStoreDtos;
     }
     public void registerNewCreator(RegisterCreatorDto registerCreatorDto) {
+        if (creatorRepository.findByEmail(registerCreatorDto.getEmail()).isPresent()) {
+            throw new IllegalArgumentException("Creator with this email already exists.");
+        }   
         registerCreatorDto.setPassword(new BCryptPasswordEncoder().encode(registerCreatorDto.getPassword()));
         Creator creator = mapper.map(registerCreatorDto, Creator.class);
         creatorRepository.save(creator);
