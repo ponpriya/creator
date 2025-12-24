@@ -22,7 +22,7 @@ import com.poomaalai.entity.Creator;
 import com.poomaalai.service.CreatorService;
 
 @RestController
-@CrossOrigin(origins = "https://creator-production-8455.up.railway.app:8080", allowCredentials = "true")
+@CrossOrigin(origins = "https://poomaalai-8b5b97a1-production.up.railway.app:8080", allowCredentials = "true")
 @RequestMapping("/creator")
 public class CreatorController {
 
