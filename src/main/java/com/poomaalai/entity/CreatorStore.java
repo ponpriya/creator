@@ -16,7 +16,7 @@ import lombok.Setter;
 @Table(name = "CREATOR_STORE")
 @Getter
 @Setter
-public class CreatorStore {
+public class CreatorStore extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,11 +44,6 @@ public class CreatorStore {
     @Column(name = "youtube_handle")
     private String youtubeHandle;
 
-    
-    
-
-
-    
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id")
     private Creator owner;

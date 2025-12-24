@@ -12,26 +12,60 @@
     <div class="poomaalai-container">
         <img th:src="@{/images/poomaalai_logo.jpg}" alt="Poomaalai Logo" class="poomaalai-logo">
         <h1>Creator Registration</h1>
-        <div th:if="${!registrationSuccess}"> 
-        <form action="#" th:action="@{/creator/register}" method="post">
-            <input type="text" name="name" placeholder="Name" required><br>
-            <input type="text" name="firstName" placeholder="First Name" required><br>
-            <input type="text" name="lastName" placeholder="Last Name" required><br>
-            <input type="text" name="phone" placeholder="Phone" required><br>
-            <input type="text" name="address" placeholder="Address" required><br>
-            <input type="text" name="zipcode" placeholder="Zipcode" required><br>
-            <input type="text" name="email" placeholder="Email" required><br>
-            <input type="text" name="password" placeholder="Password" required><br>
-            <input type="text" name="confirmPassword" placeholder="Confirm password" required><br>
-            <button type="submit">Register</button>
-        </form>
-        </div>
         <div th:if="${registrationSuccess}">
-            <p>Registration successful! Please log in.</p>
-            <a th:href="@{/creator/login}">Login</a>
+            <p>Registration successful!</p>
         </div>
-        <div th:if="${param.error}">
-            <p th:text="'Error: ' + ${param.error}"></p>
+        <div th:if="${error != null}">
+            <p th:text="${error}">You are already registered. Please log in.</p><a th:href="@{/login}">Login</a>
+        </div>
+
+        <div th:if="${!registrationSuccess && error == null}" class="input_container">
+            <form action="#" th:action="@{/creator/register}" th:object="${registerCreatorDto}" method="post"
+                novalidate>
+                <div>
+                    
+                    <input type="text" name="name" th:field="*{name}" placeholder="Name"
+                        pattern="^[a-zA-Z\s]+$" required /><br>
+                    <p th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="error-message"></p>
+                    
+                </div>
+                <div><input type="text" name="firstName" th:field="*{firstName}"
+                        placeholder="First Name" pattern="^[a-zA-Z\s]+$" required /><br>
+                    <p th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}" class="error-message"></p>
+                </div>
+                <div><input type="text" name="lastName" th:field="*{lastName}"
+                        placeholder="Last Name" pattern="^[a-zA-Z\s]+$" required /><br>
+                    <p th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}" class="error-message"></p>
+                </div>
+                <div><input type="text" name="phone" th:field="*{phone}" placeholder="Phone"
+                        pattern="^[0-9]{10}$" required /><br>
+                    <p th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}" class="error-message"></p>
+                </div>
+                <div><input type="text" name="address" th:field="*{address}"
+                        placeholder="Address" pattern="^[a-zA-Z0-9\s\-\.,]+$" required /><br>
+                    <p th:if="${#fields.hasErrors('address')}" th:errors="*{address}" class="error-message"></p>
+                </div>
+                <div><input type="text" name="zipcode" th:field="*{zipcode}"
+                        placeholder="Zipcode" pattern="^[0-9]{5}$" required /><br>
+                    <p th:if="${#fields.hasErrors('zipcode')}" th:errors="*{zipcode}" class="error-message"></p>
+                </div>
+                <div><input type="text" name="email" th:field="*{email}"
+                        pattern="[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+" placeholder="email" required /><br>
+                    <p th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="error-message"></p>
+                </div>
+                <div><input type="text" name="password" th:field="*{password}"
+                        placeholder="Password"
+                        pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$" required /><br>
+                    <p th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="error-message"></p>
+                </div>
+                <div><input type="text" name="confirmPassword" th:field="*{confirmPassword}"
+                        placeholder="Confirm password"
+                        pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$" required><br>
+                    <p th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"
+                        class="error-message"></p>
+                </div>
+                <button type="submit">Register</button>
+            </form>
         </div>
     </div>
 </body>

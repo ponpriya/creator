@@ -1,9 +1,11 @@
 package com.poomaalai.dto;
 
+import com.poomaalai.entity.Auditable;
+
 import lombok.Data;
 
 @Data
-public class CreatorDto {
+public class CreatorDto extends Auditable{
 
     private int id;
     private String name;

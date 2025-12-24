@@ -1,13 +1,15 @@
 package com.poomaalai.dto;
 
+import com.poomaalai.entity.Auditable;
 import com.poomaalai.entity.Creator;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
-public class CreatorStoreDto {
+public class CreatorStoreDto extends Auditable{
 
     private int id;
 
