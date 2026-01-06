@@ -11,11 +11,13 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.poomaalai.audit.ApplicationAuditAware;
+import com.poomaalai.security.JwtAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -41,8 +43,10 @@ public class SecurityConfig{
                     "/search",
                     "/register",
                     "/logout",
+                    "/creator/api/register",
                     "/creator/register",
                     "/creator/login",
+                    "/creator/api/login",
                     "/creator/logout",
                     "/creator-store/search",
                     "/creator-store/add",
@@ -55,20 +59,21 @@ public class SecurityConfig{
                 ).permitAll()
                 .anyRequest().authenticated()
             )
-            .formLogin(formLogin -> formLogin
-                .loginPage("/creator/login")
-                .loginProcessingUrl("/creator/login") 
-                .defaultSuccessUrl("/creator/dashboard")
-                .permitAll()
-            )
             .logout(logout -> 
                 logout
                 .logoutUrl("/creator/logout")
                 .logoutSuccessUrl("/creator/login?logout")
                 .permitAll()
             )
-            .authenticationProvider(authenticationProvider());
+            .authenticationProvider(authenticationProvider())
+            .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+        
         return http.build();
+    }
+
+    @Bean
+    public JwtAuthenticationFilter jwtAuthenticationFilter() {
+        return new JwtAuthenticationFilter();
     }
 
 
@@ -87,7 +92,7 @@ public class SecurityConfig{
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("https://poomaalai-8b5b97a1-production.up.railway.app"));
+        configuration.setAllowedOrigins(List.of("http://localhost:8080","http://localhost:3000"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);

@@ -33,6 +33,7 @@ public class SearchControllerXssTest {
     void setUp() {
         creatorStoreRepository.deleteAll();
         CreatorStore s = new CreatorStore();
+        s.setCreatedBy("testuser@example.com"); 
         s.setName("<script>alert('x')</script>");
         s.setAddress("<img src=x onerror=alert(1)>");
         s.setZipcode("99999");
