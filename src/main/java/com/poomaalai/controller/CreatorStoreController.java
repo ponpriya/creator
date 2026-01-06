@@ -27,7 +27,7 @@ import com.poomaalai.service.CreatorStoreService;
 
 
 @RestController
-@CrossOrigin(origins = "http://localhost:8080",allowedHeaders="*",allowCredentials="true")  
+@CrossOrigin(origins = "https://poomaalai-8b5b97a1-production.up.railway.app",allowedHeaders="*",allowCredentials="true")  
 @RequestMapping("/creator-store")
 public class CreatorStoreController {
 
