@@ -31,7 +31,7 @@ import jakarta.validation.Valid;
 
 
 @RestController
-@CrossOrigin(origins = {"http://localhost:8080","https://www.poomaalai.com"},allowedHeaders={"Content-Type", "Authorization"},allowCredentials="true")
+@CrossOrigin(origins = {"http://localhost:8080","http://localhost:8081","https://www.poomaalai.com","https://creator-production-8455.up.railway.app"},allowedHeaders={"Content-Type", "Authorization"},allowCredentials="true")
 @RequestMapping("/creator-store")
 public class CreatorStoreController {
 

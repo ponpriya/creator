@@ -8,12 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,7 +31,7 @@ import com.poomaalai.service.CreatorService;
 import jakarta.validation.Valid;
 
 @RestController
-@CrossOrigin(origins = {"http://localhost:8080","https://www.poomaalai.com"},allowedHeaders={"Content-Type", "Authorization"},allowCredentials="true")
+@CrossOrigin(origins = {"http://localhost:8080","http://localhost:8081","https://www.poomaalai.com","https://creator-production-8455.up.railway.app"},allowedHeaders={"Content-Type", "Authorization"},allowCredentials="true")
 @RequestMapping("/creator")
 public class CreatorController {
 
@@ -135,22 +133,5 @@ public class CreatorController {
         return ResponseEntity.ok(response);
     }
     
-    @GetMapping("/dashboard")
-    public String showDashboard(Model model) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getPrincipal())) {
-            return "redirect:/creator/login";
-        }
-        String email = auth.getName();
-        Creator owner = creatorService.getCreatorByEmail(email);
-        if (owner == null) {
-            model.addAttribute("creatorStoreDtos", List.of());
-            return "dashboard";
-        }
-        logger.debug("Dashboard accessed by creator: {}", email);
-        model.addAttribute("creator", owner);
-        model.addAttribute("creatorStoreDtos", creatorService.getAllCreatorStoresByOwnerEmail(email));
-        return "dashboard";
-    }
 }
 
