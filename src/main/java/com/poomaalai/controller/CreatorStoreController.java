@@ -21,17 +21,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import jakarta.validation.Valid;
-
 import com.poomaalai.dto.CreatorStoreDto;
 import com.poomaalai.entity.Creator;
 import com.poomaalai.security.JwtTokenProvider;
 import com.poomaalai.service.CreatorService;
 import com.poomaalai.service.CreatorStoreService;
 
+import jakarta.validation.Valid;
+
 
 @RestController
-@CrossOrigin(origins = "https://www.poomaalai.com",allowedHeaders="*",allowCredentials="true")  
+@CrossOrigin(origins = "https://www.poomaalai.com",allowedHeaders={"Content-Type", "Authorization"},allowCredentials="true")  
 @RequestMapping("/creator-store")
 public class CreatorStoreController {
 
