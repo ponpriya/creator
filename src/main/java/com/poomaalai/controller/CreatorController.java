@@ -2,6 +2,8 @@ package com.poomaalai.controller;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +22,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
+
 import com.poomaalai.dto.CreatorDto;
 import com.poomaalai.dto.LoginCreatorDto;
 import com.poomaalai.dto.LoginResponseDto;
@@ -32,6 +36,8 @@ import com.poomaalai.service.CreatorService;
 @CrossOrigin(origins = "https://www.poomaalai.com",allowedHeaders="*",allowCredentials="true")
 @RequestMapping("/creator")
 public class CreatorController {
+
+    private static final Logger logger = LoggerFactory.getLogger(CreatorController.class);
 
     @Autowired
     private CreatorService creatorService;
@@ -54,10 +60,10 @@ public class CreatorController {
         return creatorService.getAllCreators();
     }
     @PostMapping("/api/register")
-    public ResponseEntity<RegisterCreatorDto> registerCreator(@RequestBody RegisterCreatorDto registerCreatorDto) {
-        System.out.println("Registering new creator : " + registerCreatorDto);
+    public ResponseEntity<RegisterCreatorDto> registerCreator(@Valid @RequestBody RegisterCreatorDto registerCreatorDto) {
+        logger.info("Registration attempt for email: {}", registerCreatorDto.getEmail());
         if (creatorService.getCreatorByEmail(registerCreatorDto.getEmail()) != null) {
-            System.out.println("Email already exists: " + registerCreatorDto.getEmail());
+            logger.warn("Registration failed: Email already exists: {}", registerCreatorDto.getEmail());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(registerCreatorDto);
         }
        // Normalize and validate email uniqueness
@@ -68,10 +74,10 @@ public class CreatorController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(registerCreatorDto);
         }
         registerCreatorDto.setCreatedBy(email);
-        System.out.println("Registering new creator : " + registerCreatorDto);
+        logger.info("Creating new creator with email: {}", email);
         creatorService.registerNewCreator(registerCreatorDto);
         if (creatorService.getCreatorByEmail(email) != null) {
-            System.out.println("Creator registered successfully with email: " + email);
+            logger.info("Creator registered successfully with email: {}", email);
             return ResponseEntity.ok(registerCreatorDto);
         }else{
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(registerCreatorDto);
@@ -80,8 +86,8 @@ public class CreatorController {
     }
 
     @PostMapping("/api/login")
-    public ResponseEntity<?> login(@RequestBody LoginCreatorDto loginDto) {
-        System.out.println("Login attempt for email: " + loginDto.getEmail());
+    public ResponseEntity<?> login(@Valid @RequestBody LoginCreatorDto loginDto) {
+        logger.info("Login attempt for email: {}", loginDto.getEmail());
 
         // Normalize email
         String email = loginDto.getEmail() == null ? null : loginDto.getEmail().trim().toLowerCase();
@@ -94,13 +100,13 @@ public class CreatorController {
         // Find creator by email
         Creator creator = creatorService.getCreatorByEmail(email);
         if (creator == null) {
-            System.out.println("Creator not found with email: " + email);
+            logger.warn("Login failed: Creator not found with email: {}", email);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid email or password.");
         }
 
         // Verify password
         if (!passwordEncoder.matches(loginDto.getPassword(), creator.getPassword())) {
-            System.out.println("Invalid password for email: " + email);
+            logger.warn("Login failed: Invalid password for email: {}", email);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid email or password.");
         }
 
@@ -120,14 +126,12 @@ public class CreatorController {
             UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
                 userDetails, null, userDetails.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(auth);
-            System.out.println("Security context set for: " + email);
-            System.out.println("Authentication details: " + auth);
-            System.out.println("Authentication in SecurityContext: " + SecurityContextHolder.getContext().getAuthentication());
+            logger.debug("Security context set for: {}", email);
         } catch (UsernameNotFoundException ex) {
-            System.out.println("Warning: could not set security context: " + ex.getMessage());
+            logger.warn("Could not set security context: {}", ex.getMessage());
         }
 
-        System.out.println("Login successful for: " + email);
+        logger.info("Login successful for: {}", email);
         return ResponseEntity.ok(response);
     }
     
@@ -143,8 +147,7 @@ public class CreatorController {
             model.addAttribute("creatorStoreDtos", List.of());
             return "dashboard";
         }
-        System.out.println("Logged in creator: " + owner.getEmail());
-        System.out.println("Logged in creator email: " + email);
+        logger.debug("Dashboard accessed by creator: {}", email);
         model.addAttribute("creator", owner);
         model.addAttribute("creatorStoreDtos", creatorService.getAllCreatorStoresByOwnerEmail(email));
         return "dashboard";

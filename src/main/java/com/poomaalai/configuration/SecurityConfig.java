@@ -8,6 +8,7 @@ import org.springframework.data.domain.AuditorAware;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -18,6 +19,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.poomaalai.audit.ApplicationAuditAware;
 import com.poomaalai.security.JwtAuthenticationFilter;
+import com.poomaalai.security.RateLimitFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -34,8 +36,15 @@ public class SecurityConfig{
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Enable CORS
-            .csrf(csrf -> csrf.disable()) 
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            .csrf(csrf -> csrf.disable())
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .headers(headers -> headers
+                .xssProtection(xss -> xss.headerValue(org.springframework.security.web.header.writers.XXssProtectionHeaderWriter.HeaderValue.ENABLED_MODE_BLOCK))
+                .contentTypeOptions(contentType -> {})
+                .frameOptions(frame -> frame.deny())
+                .contentSecurityPolicy(csp -> csp.policyDirectives("default-src 'self'"))
+            )
             .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                 .requestMatchers(
                     "/", 
@@ -49,14 +58,14 @@ public class SecurityConfig{
                     "/creator/api/login",
                     "/creator/logout",
                     "/creator-store/search",
-                    "/creator-store/add",
                     "/favicon.ico",
                     "/css/**",
                     "/js/**",
                     "/images/**",
                     "/styles.css",
-                    "/actuator/**"
+                    "/actuator/health"
                 ).permitAll()
+                .requestMatchers("/actuator/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
             )
             .logout(logout -> 
@@ -66,7 +75,8 @@ public class SecurityConfig{
                 .permitAll()
             )
             .authenticationProvider(authenticationProvider())
-            .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+            .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(rateLimitFilter(), UsernamePasswordAuthenticationFilter.class);
         
         return http.build();
     }
@@ -74,6 +84,11 @@ public class SecurityConfig{
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() {
         return new JwtAuthenticationFilter();
+    }
+
+    @Bean
+    public RateLimitFilter rateLimitFilter() {
+        return new RateLimitFilter();
     }
 
 
@@ -92,9 +107,9 @@ public class SecurityConfig{
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("https://www.poomaalai.com"));
+        configuration.setAllowedOrigins(List.of("https://www.poomaalai.com", "http://localhost:3000"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowedHeaders(List.of("Content-Type", "Authorization"));
         configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L);
         

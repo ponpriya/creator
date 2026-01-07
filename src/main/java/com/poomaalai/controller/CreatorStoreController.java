@@ -2,6 +2,8 @@ package com.poomaalai.controller;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +21,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
+
 import com.poomaalai.dto.CreatorStoreDto;
 import com.poomaalai.entity.Creator;
 import com.poomaalai.security.JwtTokenProvider;
@@ -30,6 +34,8 @@ import com.poomaalai.service.CreatorStoreService;
 @CrossOrigin(origins = "https://www.poomaalai.com",allowedHeaders="*",allowCredentials="true")  
 @RequestMapping("/creator-store")
 public class CreatorStoreController {
+
+    private static final Logger logger = LoggerFactory.getLogger(CreatorStoreController.class);
 
     @Autowired
     private CreatorStoreService creatorStoreService;
@@ -48,7 +54,7 @@ public class CreatorStoreController {
             return ResponseEntity.status(HttpStatus.OK).body(creatorStoreDtos);
         }
         creatorStoreDtos = creatorStoreService.searchByZipcode(zipcode);
-        System.out.println("Found " + creatorStoreDtos + " stores for zipcode: " + zipcode); 
+        logger.info("Found {} stores for zipcode: {}", creatorStoreDtos.size(), zipcode); 
         if (creatorStoreDtos.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(creatorStoreDtos);
         }
@@ -56,9 +62,9 @@ public class CreatorStoreController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<String> addStore(@RequestBody CreatorStoreDto creatorStoreDto, @RequestHeader(value = "Authorization", required = false) String authHeader) {
+    public ResponseEntity<String> addStore(@Valid @RequestBody CreatorStoreDto creatorStoreDto, @RequestHeader(value = "Authorization", required = false) String authHeader) {
 
-      System.out.println("Adding new Creator Store: " + creatorStoreDto);          
+      logger.info("Adding new Creator Store: {}", creatorStoreDto.getName());          
       
       // Extract and validate Bearer token
       if (authHeader != null && authHeader.startsWith("Bearer ")) {
@@ -71,7 +77,7 @@ public class CreatorStoreController {
                           userDetails, null, userDetails.getAuthorities());
                   SecurityContextHolder.getContext().setAuthentication(auth);
               } catch (UsernameNotFoundException ex) {
-                  System.out.println("Warning: could not set security context from token: " + ex.getMessage());
+                  logger.warn("Could not set security context from token: {}", ex.getMessage());
               }
           } else {
               return ResponseEntity.status(401).body("Unauthorized: Invalid or expired token.");
@@ -80,7 +86,7 @@ public class CreatorStoreController {
 
       // Get authenticated user
       Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-      System.out.println("Authenticated user: " + auth);
+      logger.debug("Authenticated user: {}", auth != null ? auth.getName() : "none");
       if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getPrincipal())) {
           return ResponseEntity.status(403).body("Unauthorized: User not authenticated.");
       }

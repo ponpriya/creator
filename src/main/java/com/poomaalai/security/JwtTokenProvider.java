@@ -12,6 +12,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
 
 @Component
 public class JwtTokenProvider {
@@ -19,8 +20,15 @@ public class JwtTokenProvider {
     @Value("${app.jwt.secret:mySecretKeyForJwtTokenGenerationAndValidationPurposeOnlyDoNotShareWithAnyone}")
     private String jwtSecret;
 
-    @Value("${app.jwt.expiration:86400000}")
-    private int jwtExpirationMs; // Default 24 hours in milliseconds
+    @Value("${app.jwt.expiration:3600000}")
+    private int jwtExpirationMs; // Default 1 hour in milliseconds
+
+    @PostConstruct
+    public void init() {
+        if (jwtSecret == null || jwtSecret.length() < 32) {
+            throw new IllegalStateException("JWT secret must be at least 32 characters. Set via environment variable APP_JWT_SECRET.");
+        }
+    }
 
     public String generateToken(String email) {
         Date now = new Date();
