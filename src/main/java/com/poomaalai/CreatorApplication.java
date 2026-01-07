@@ -25,7 +25,7 @@ public class CreatorApplication {
 		
 		// Log all registered endpoints
 		logger.info("========== Registered Endpoints ==========");
-		RequestMappingHandlerMapping requestMappingHandlerMapping = context.getBean(RequestMappingHandlerMapping.class);
+		RequestMappingHandlerMapping requestMappingHandlerMapping = context.getBean("requestMappingHandlerMapping", RequestMappingHandlerMapping.class);
 		Map<RequestMappingInfo, HandlerMethod> map = requestMappingHandlerMapping.getHandlerMethods();
 		map.forEach((key, value) -> logger.info("{} -> {}", key, value));
 		logger.info("===========================================");
