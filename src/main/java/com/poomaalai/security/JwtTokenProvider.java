@@ -17,16 +17,16 @@ import jakarta.annotation.PostConstruct;
 @Component
 public class JwtTokenProvider {
 
-    @Value("${app.jwt.secret:mySecretKeyForJwtTokenGenerationAndValidationPurposeOnlyDoNotShareWithAnyone}")
+    @Value("${app.jwt.secret}")
     private String jwtSecret;
 
-    @Value("${app.jwt.expiration:3600000}")
+    @Value("${app.jwt.expiration}")
     private int jwtExpirationMs; // Default 1 hour in milliseconds
 
     @PostConstruct
     public void init() {
-        if (jwtSecret == null || jwtSecret.length() < 32) {
-            throw new IllegalStateException("JWT secret must be at least 32 characters. Set via environment variable APP_JWT_SECRET.");
+        if (jwtSecret == null || jwtSecret.isBlank() || jwtSecret.length() < 32) {
+            throw new IllegalStateException("JWT secret must be provided via app.jwt.secret (e.g., environment variable JWT_SECRET) and be at least 32 characters.");
         }
     }
 

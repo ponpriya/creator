@@ -19,7 +19,7 @@ public abstract class Auditable {
 
     @CreatedBy
     @Column(
-        nullable=false,
+        nullable=true,
         updatable=false
     )
     protected String createdBy;

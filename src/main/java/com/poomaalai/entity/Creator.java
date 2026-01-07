@@ -1,9 +1,12 @@
 package com.poomaalai.entity;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -61,7 +64,16 @@ public class Creator extends Auditable implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        if (roles == null || roles.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return roles.stream()
+                .map(role -> {
+                    String name = role.getName();
+                    String authority = name != null && name.startsWith("ROLE_") ? name : "ROLE_" + name;
+                    return new SimpleGrantedAuthority(authority);
+                })
+                .collect(Collectors.toList());
     }
 
     @Override

@@ -1,7 +1,6 @@
 package com.poomaalai.dto;
 
-import org.springframework.security.core.parameters.P;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.poomaalai.entity.Auditable;
 
 import jakarta.validation.constraints.Email;
@@ -39,14 +38,15 @@ public class RegisterCreatorDto extends Auditable{
 
     @NotBlank
     @Email
-    @Pattern(regexp = "^[a-zA-Z0-9_\\-\\+\\(\\)\\s]{3,15}$", message = "Email must be between 3 to 15 characters and can only contain letters, numbers, and underscores")
     private String email;
 
+    @JsonIgnore
     @NotBlank
     @Size(min = 8, message = "Password must be at least 8 characters")
     @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$", message = "Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character")
     private String password;
 
+    @JsonIgnore
     @NotBlank
     @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$", message = "Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character")
     private String confirmPassword;

@@ -1,6 +1,5 @@
 package com.poomaalai.service;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -86,9 +85,9 @@ public class CreatorService  implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + email));
 
         return org.springframework.security.core.userdetails.User.builder()
-                .username(creator.getEmail())
-                .password(creator.getPassword()) // The stored password is already Bcrypt-hashed
-                .authorities(Collections.emptyList())
-                .build();
+            .username(creator.getEmail())
+            .password(creator.getPassword()) // The stored password is already Bcrypt-hashed
+            .authorities(creator.getAuthorities())
+            .build();
     }
 }

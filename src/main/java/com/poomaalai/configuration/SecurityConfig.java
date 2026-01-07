@@ -99,11 +99,11 @@ public class SecurityConfig{
         return authProvider;
     }
 
-    @Bean
-    public AuditorAware<Integer> AuditorAware(){
-        return new ApplicationAuditAware();
+        @Bean
+        public AuditorAware<String> auditorAware(){
+            return new ApplicationAuditAware();
 
-    }
+        }
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();

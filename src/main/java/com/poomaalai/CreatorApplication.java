@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 @SpringBootApplication
 @ComponentScan(basePackages = {"com.poomaalai"})
-@EnableJpaAuditing(auditorAwareRef="AuditorAware")
+@EnableJpaAuditing(auditorAwareRef="auditorAware")
 public class CreatorApplication {
 
 
