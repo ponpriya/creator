@@ -57,4 +57,40 @@
     <changeSet author="priar (generated)" id="1766000969431-7">
         <addForeignKeyConstraint baseColumnNames="roles_id" baseTableName="creator_roles" constraintName="fkfsnyewaturiog2g2sjfn7v10b" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="role" validate="true"/>
     </changeSet>
+    
+    <!-- Add audit columns to creator table -->
+    <changeSet author="priar" id="1736271600000-1">
+        <addColumn tableName="creator">
+            <column name="createdBy" type="VARCHAR(255)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="createdDate" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="lastModifiedBy" type="VARCHAR(255)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="lastModifiedDate" type="TIMESTAMP">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
+    
+    <!-- Add audit columns to creator_store table -->
+    <changeSet author="priar" id="1736271600000-2">
+        <addColumn tableName="creator_store">
+            <column name="createdBy" type="VARCHAR(255)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="createdDate" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="lastModifiedBy" type="VARCHAR(255)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="lastModifiedDate" type="TIMESTAMP">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>
