@@ -145,8 +145,12 @@
                 <artifactId>liquibase-maven-plugin</artifactId>
                 <version>4.23.2</version>
                 <configuration>
-                    <propertyFile>liquibase-dev.properties</propertyFile>
-                    <databaseChangeLogFile>db/changelog/db.changelog-master.xml</databaseChangeLogFile>	
+                    <outputChangeLogFile>src/main/resources/db/changelog/db.changelog-master.xml</outputChangeLogFile>
+                    <propertyFile>${liquibase.propertyFile}</propertyFile>
+                    <propertyFileWillOverride>true</propertyFileWillOverride>
+                    <url>${env.SPRING_DATASOURCE_URL}</url>
+                    <driver>org.postgresql.Driver</driver>
+                    <changeLogFile>src/main/resources/db/changelog/db.changelog-master.xml</changeLogFile>
                 </configuration>
             </plugin>
         </plugins>	

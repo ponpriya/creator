@@ -19,6 +19,7 @@ public abstract class Auditable {
 
     @CreatedBy
     @Column(
+        name = "created_by",
         nullable=true,
         updatable=false
     )
@@ -26,17 +27,24 @@ public abstract class Auditable {
 
     @CreatedDate
     @Column(
+        name = "created_date",
         nullable=false,
         updatable=false
     )
     protected LocalDateTime createdDate;
 
     @LastModifiedBy
-    @Column(insertable=false)
+    @Column(
+        name = "last_modified_by",
+        insertable=false
+    )
     protected String lastModifiedBy;
 
     @LastModifiedDate
-    @Column(insertable=false)
+    @Column(
+        name = "last_modified_date",
+        insertable=false
+    )
     protected LocalDateTime lastModifiedDate;
 
 }
