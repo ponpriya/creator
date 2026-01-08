@@ -59,23 +59,24 @@ public class CreatorController {
     }
     @PostMapping("/api/register")
     public ResponseEntity<RegisterCreatorDto> registerCreator(@Valid @RequestBody RegisterCreatorDto registerCreatorDto) {
-        logger.info("Registration attempt for email: {}", registerCreatorDto.getEmail());
-        if (creatorService.getCreatorByEmail(registerCreatorDto.getEmail()) != null) {
-            logger.warn("Registration failed: Email already exists: {}", registerCreatorDto.getEmail());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(registerCreatorDto);
-        }
-       // Normalize and validate email uniqueness
+        logger.info("Registration attempt for email");
+        // Normalize email first
         String email = registerCreatorDto.getEmail() == null ? null : registerCreatorDto.getEmail().trim().toLowerCase();
         registerCreatorDto.setEmail(email);
+
+        if (creatorService.getCreatorByEmail(email) != null) {
+            logger.warn("Registration failed: Email already exists");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(registerCreatorDto);
+        }
 
         if (!registerCreatorDto.getPassword().equals(registerCreatorDto.getConfirmPassword())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(registerCreatorDto);
         }
         registerCreatorDto.setCreatedBy(email);
-        logger.info("Creating new creator with email: {}", email);
+        logger.info("Creating new creator with email");
         creatorService.registerNewCreator(registerCreatorDto);
         if (creatorService.getCreatorByEmail(email) != null) {
-            logger.info("Creator registered successfully with email: {}", email);
+            logger.info("Creator registered successfully with email");
             return ResponseEntity.ok(registerCreatorDto);
         }else{
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(registerCreatorDto);
@@ -85,7 +86,7 @@ public class CreatorController {
 
     @PostMapping("/api/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginCreatorDto loginDto) {
-        logger.info("Login attempt for email: {}", loginDto.getEmail());
+        logger.info("Login attempt for email");
 
         // Normalize email
         String email = loginDto.getEmail() == null ? null : loginDto.getEmail().trim().toLowerCase();
@@ -98,19 +99,19 @@ public class CreatorController {
         // Find creator by email
         Creator creator = creatorService.getCreatorByEmail(email);
         if (creator == null) {
-            logger.warn("Login failed: Creator not found with email: {}", email);
+            logger.warn("Login failed: Creator not found with email");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid email or password.");
         }
 
         // Verify password
         if (!passwordEncoder.matches(loginDto.getPassword(), creator.getPassword())) {
-            logger.warn("Login failed: Invalid password for email: {}", email);
+            logger.warn("Login failed: Invalid password for email");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid email or password.");
         }
 
         // Generate JWT token
         String token = jwtTokenProvider.generateToken(email);
-        long expiresIn = 86400000; // 24 hours in milliseconds
+        long expiresIn = jwtTokenProvider.getExpiryDuration();
         LoginResponseDto response = new LoginResponseDto(
             token,
             creator.getEmail(),
@@ -124,12 +125,12 @@ public class CreatorController {
             UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
                 userDetails, null, userDetails.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(auth);
-            logger.debug("Security context set for: {}", email);
+            logger.debug("Security context set ");
         } catch (UsernameNotFoundException ex) {
             logger.warn("Could not set security context: {}", ex.getMessage());
         }
 
-        logger.info("Login successful for: {}", email);
+        logger.info("Login successful");
         return ResponseEntity.ok(response);
     }
     

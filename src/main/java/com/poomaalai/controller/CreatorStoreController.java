@@ -45,6 +45,9 @@ public class CreatorStoreController {
 
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
+
+    private static final java.util.regex.Pattern ZIPCODE_PATTERN = 
+        java.util.regex.Pattern.compile("\\d{5}");
     
     @GetMapping("/search")
     public ResponseEntity<List<CreatorStoreDto>> searchResults(@RequestParam(value = "zipcode", required = false) String zipcode) {
@@ -53,11 +56,11 @@ public class CreatorStoreController {
             creatorStoreDtos = creatorStoreService.getAllCreatorStores();
             return ResponseEntity.status(HttpStatus.OK).body(creatorStoreDtos);
         }
+        if (!ZIPCODE_PATTERN.matcher(zipcode).matches()) {
+           return ResponseEntity.badRequest().build();
+       }
         creatorStoreDtos = creatorStoreService.searchByZipcode(zipcode);
         logger.info("Found {} stores for zipcode: {}", creatorStoreDtos.size(), zipcode); 
-        if (creatorStoreDtos.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(creatorStoreDtos);
-        }
         return ResponseEntity.status(HttpStatus.OK).body(creatorStoreDtos);
     }
 
@@ -78,9 +81,10 @@ public class CreatorStoreController {
                   SecurityContextHolder.getContext().setAuthentication(auth);
               } catch (UsernameNotFoundException ex) {
                   logger.warn("Could not set security context from token: {}", ex.getMessage());
+                  return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized: User not found.");
               }
           } else {
-              return ResponseEntity.status(401).body("Unauthorized: Invalid or expired token.");
+              return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized: Invalid or expired token.");
           }
       }
 
@@ -88,13 +92,13 @@ public class CreatorStoreController {
       Authentication auth = SecurityContextHolder.getContext().getAuthentication();
       logger.debug("Authenticated user: {}", auth != null ? auth.getName() : "none");
       if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getPrincipal())) {
-          return ResponseEntity.status(403).body("Unauthorized: User not authenticated.");
+          return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized: User not authenticated.");
       }
       
       String email = auth.getName();
       Creator owner = creatorService.getCreatorByEmail(email);
       if (owner == null) {
-          return ResponseEntity.status(403).body("Unauthorized: Creator not found.");
+          return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized: Creator not found.");
       }
       
       // Set the owner on the creatorStoreDto before saving

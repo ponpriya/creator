@@ -1,7 +1,6 @@
 package com.poomaalai.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.poomaalai.entity.Auditable;
 import com.poomaalai.entity.Creator;
 
 import jakarta.validation.constraints.NotBlank;
@@ -17,9 +16,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor  
 @AllArgsConstructor
-public class CreatorStoreDto extends Auditable{
-
-
+public class CreatorStoreDto{
 
     @NotBlank
     @Size(max = 200)
