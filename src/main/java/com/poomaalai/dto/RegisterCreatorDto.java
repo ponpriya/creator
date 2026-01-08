@@ -10,7 +10,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
-public class RegisterCreatorDto extends Auditable{
+public class RegisterCreatorDto {
 
     @NotBlank
     @Pattern(regexp = "^[a-zA-Z0-9_]{3,15}$", message = "Store name must be between 3 to 15 characters and can only contain letters, numbers, and underscores")

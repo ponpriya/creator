@@ -72,7 +72,6 @@ public class CreatorController {
         if (!registerCreatorDto.getPassword().equals(registerCreatorDto.getConfirmPassword())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(registerCreatorDto);
         }
-        registerCreatorDto.setCreatedBy(email);
         logger.info("Creating new creator with email");
         creatorService.registerNewCreator(registerCreatorDto);
         if (creatorService.getCreatorByEmail(email) != null) {

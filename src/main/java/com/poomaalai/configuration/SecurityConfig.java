@@ -19,7 +19,9 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.poomaalai.audit.ApplicationAuditAware;
 import com.poomaalai.security.JwtAuthenticationFilter;
+import com.poomaalai.security.JwtTokenProvider;
 import com.poomaalai.security.RateLimitFilter;
+import com.poomaalai.service.CreatorService;
 
 @Configuration
 @EnableWebSecurity
@@ -27,6 +29,12 @@ public class SecurityConfig{
 
     @Autowired
     private UserDetailsService creatorService;
+
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
+
+    @Autowired
+    private RateLimitFilter rateLimitFilter;
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
@@ -44,6 +52,10 @@ public class SecurityConfig{
                 .contentTypeOptions(contentType -> {})
                 .frameOptions(frame -> frame.deny())
                 .contentSecurityPolicy(csp -> csp.policyDirectives("default-src 'self'"))
+                .httpStrictTransportSecurity(hsts -> hsts
+                    .includeSubDomains(true)
+                    .maxAgeInSeconds(31536000)
+                )
             )
             .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                 .requestMatchers(
@@ -76,21 +88,15 @@ public class SecurityConfig{
             )
             .authenticationProvider(authenticationProvider())
             .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
-            .addFilterBefore(rateLimitFilter(), UsernamePasswordAuthenticationFilter.class);
+            .addFilterBefore(rateLimitFilter, UsernamePasswordAuthenticationFilter.class);
         
         return http.build();
     }
 
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() {
-        return new JwtAuthenticationFilter();
+        return new JwtAuthenticationFilter(jwtTokenProvider, (CreatorService) creatorService);
     }
-
-    @Bean
-    public RateLimitFilter rateLimitFilter() {
-        return new RateLimitFilter();
-    }
-
 
    @Bean
     public DaoAuthenticationProvider authenticationProvider() {

@@ -102,7 +102,6 @@ public class CreatorStoreController {
       }
       
       // Set the owner on the creatorStoreDto before saving
-      creatorStoreDto.setCreatedBy(owner.getEmail());
       creatorStoreDto.setOwner(owner);
       creatorStoreService.addCreatorStore(creatorStoreDto);
       return ResponseEntity.status(201).body("Creator Store added successfully.");

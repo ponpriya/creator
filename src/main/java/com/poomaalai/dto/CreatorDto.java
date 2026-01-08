@@ -5,7 +5,7 @@ import com.poomaalai.entity.Auditable;
 import lombok.Data;
 
 @Data
-public class CreatorDto extends Auditable{
+public class CreatorDto{
 
     private int id;
     private String name;

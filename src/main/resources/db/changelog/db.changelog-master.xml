@@ -17,7 +17,7 @@
     </changeSet>
     <changeSet author="priar (generated)" id="1766000969431-2">
         <createTable tableName="creator_roles">
-            <column name="creator_id" type="INTEGER">
+            <column name="creator_id" type="BIGINT">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="creator_roles_pkey"/>
             </column>
             <column name="roles_id" type="BIGINT">
@@ -34,7 +34,7 @@
             <column name="name" type="VARCHAR(255)"/>
             <column name="phone" type="VARCHAR(255)"/>
             <column name="zipcode" type="VARCHAR(255)"/>
-            <column name="owner_id" type="INTEGER"/>
+            <column name="owner_id" type="BIGINT"/>
             <column name="facebook_handle" type="VARCHAR(255)"/>
             <column name="instagram_handle" type="VARCHAR(255)"/>
             <column name="youtube_handle" type="VARCHAR(255)"/>
@@ -64,7 +64,7 @@
             <column name="created_by" type="VARCHAR(255)">
                 <constraints nullable="true"/>
             </column>
-            <column name="created_date" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+            <column name="created_date" type="TIMESTAMP">
                 <constraints nullable="false"/>
             </column>
             <column name="last_modified_by" type="VARCHAR(255)">
@@ -82,7 +82,7 @@
             <column name="created_by" type="VARCHAR(255)">
                 <constraints nullable="true"/>
             </column>
-            <column name="created_date" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+            <column name="created_date" type="TIMESTAMP">
                 <constraints nullable="false"/>
             </column>
             <column name="last_modified_by" type="VARCHAR(255)">
