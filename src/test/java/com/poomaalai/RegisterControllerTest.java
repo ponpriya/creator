@@ -5,12 +5,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,49 +36,56 @@ public class RegisterControllerTest {
     }
 
     @Test
-    void showRegistrationForm_containsFields() throws Exception {
-        mockMvc.perform(get("/creator/register"))
-                .andExpect(status().isOk())
-                .andExpect(content().string(org.hamcrest.Matchers.containsString("name=\"email\"")))
-                .andExpect(content().string(org.hamcrest.Matchers.containsString("name=\"password\"")))
-                .andExpect(content().string(org.hamcrest.Matchers.containsString("name=\"confirmPassword\"")));
-    }
-
-    @Test
     void registerCreator_success_createsUserWithHashedPassword() throws Exception {
         String email = "newuser@test.com";
-        mockMvc.perform(post("/creator/register")
-                .param("name", "New User")
-                .param("firstName", "New")
-                .param("lastName", "User")
-                .param("phone", "1234567890")
-                .param("address", "Some address")
-                .param("zipcode", "12345")
-                .param("email", email)
-                .param("password", "strongpass")
-                .param("confirmPassword", "strongpass"))
+        String requestBody = "{\"firstName\":\"New\",\"lastName\":\"User\",\"phone\":\"1234567890\"," +
+                "\"address\":\"Some address\",\"zipcode\":\"12345\",\"email\":\"" + email + "\"," +
+                "\"password\":\"Strongpass!123\",\"confirmPassword\":\"Strongpass!123\"}";
+
+        mockMvc.perform(post("/creator/api/register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestBody))
                 .andExpect(status().isOk());
 
         Creator created = creatorRepository.findByEmail(email).orElse(null);
         assertThat(created).isNotNull();
-        assertThat(created.getPassword()).isNotEqualTo("strongpass");
+        assertThat(created.getPassword()).isNotEqualTo("Strongpass!123");
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        assertThat(encoder.matches("strongpass", created.getPassword())).isTrue();
+        assertThat(encoder.matches("Strongpass!123", created.getPassword())).isTrue();
     }
 
     @Test
-    void registerCreator_passwordMismatch_redirectsWithError() throws Exception {
-        mockMvc.perform(post("/creator/register")
-                .param("name", "Mismatch User")
-                .param("firstName", "Mis")
-                .param("lastName", "Match")
-                .param("phone", "1234567890")
-                .param("address", "Addr")
-                .param("zipcode", "12345")
-                .param("email", "mismatch@test.com")
-                .param("password", "pw1")
-                .param("confirmPassword", "pw2"))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/creator/register?error=passwordmismatch"));
+    void registerCreator_passwordMismatch_returnsBadRequest() throws Exception {
+        String requestBody = "{\"firstName\":\"Mis\",\"lastName\":\"Match\",\"phone\":\"1234567890\"," +
+                "\"address\":\"Addr\",\"zipcode\":\"12345\",\"email\":\"mismatch@test.com\"," +
+                "\"password\":\"pw1\",\"confirmPassword\":\"pw2\"}";
+
+        mockMvc.perform(post("/creator/api/register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestBody))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void registerCreator_duplicateEmail_returnsBadRequest() throws Exception {
+        String email = "duplicate@test.com";
+        Creator existing = new Creator();
+        existing.setEmail(email);
+        existing.setPassword("hashedPassword");
+        existing.setFirstName("Existing");
+        existing.setLastName("User");
+        existing.setPhone("1234567890");
+        existing.setAddress("123 Existing St");
+        creatorRepository.save(existing);
+
+        String requestBody = "{\"firstName\":\"New\",\"lastName\":\"User\",\"phone\":\"1234567890\"," +
+                "\"address\":\"Addr\",\"zipcode\":\"12345\",\"email\":\"" + email + "\"," +
+                "\"password\":\"password123\",\"confirmPassword\":\"password123\"}";
+
+        mockMvc.perform(post("/creator/api/register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestBody))
+                .andExpect(status().isBadRequest());
     }
 }
+

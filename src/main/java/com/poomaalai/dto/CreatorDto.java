@@ -1,14 +1,11 @@
 package com.poomaalai.dto;
 
-import com.poomaalai.entity.Auditable;
-
 import lombok.Data;
 
 @Data
 public class CreatorDto{
 
     private int id;
-    private String name;
     private String firstName;
     private String lastName;
     private String email;

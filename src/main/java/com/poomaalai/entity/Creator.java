@@ -33,10 +33,6 @@ public class Creator extends Auditable implements UserDetails {
     @Column(name = "id")
     private int id;
 
-
-    @Column(name = "name", nullable = false, unique = true)
-    private String name;
-
     @Column(name = "first_name")
     private String firstName;
 

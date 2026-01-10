@@ -1,8 +1,5 @@
 package com.poomaalai.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.poomaalai.entity.Auditable;
-
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -12,10 +9,7 @@ import lombok.Data;
 @Data
 public class RegisterCreatorDto {
 
-    @NotBlank
-    @Pattern(regexp = "^[a-zA-Z0-9_]{3,15}$", message = "Store name must be between 3 to 15 characters and can only contain letters, numbers, and underscores")
-    private String name;
-
+    
     @NotBlank
     @Pattern(regexp = "^[a-zA-Z0-9_]{3,15}$", message = "First name must be between 3 to 15 characters and can only contain letters, numbers, and underscores")
     private String firstName;
@@ -40,15 +34,16 @@ public class RegisterCreatorDto {
     @Email
     private String email;
 
-    @JsonIgnore
+
     @NotBlank
     @Size(min = 8, message = "Password must be at least 8 characters")
     @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$", message = "Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character")
     private String password;
 
-    @JsonIgnore
+    
     @NotBlank
-    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$", message = "Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character")
+    @Size(min = 8, message = "Confirm Password must be at least 8 characters")  
+    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$", message = "Confirm Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character")
     private String confirmPassword;
     
 }

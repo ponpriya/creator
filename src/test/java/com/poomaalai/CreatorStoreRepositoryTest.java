@@ -34,7 +34,11 @@ public class CreatorStoreRepositoryTest {
     void findByOwnerEmail_shouldReturnStoresForEmail() {
         Creator c = new Creator();
         c.setEmail("repo@test.com");
-        c.setName("Repo User");
+        c.setFirstName("Repo");
+        c.setLastName("Test");
+        c.setPhone("1234567890");
+        c.setAddress("123 Repo St");
+        c.setPassword("password");
         creatorRepository.save(c);
 
         CreatorStore s1 = new CreatorStore();

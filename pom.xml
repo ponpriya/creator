@@ -143,7 +143,7 @@
             <plugin>
                 <groupId>org.liquibase</groupId>
                 <artifactId>liquibase-maven-plugin</artifactId>
-                <version>5.0.3</version>
+                <version>4.27.0</version>
                 <configuration>
                     <outputChangeLogFile>src/main/resources/db/changelog/db.changelog-master.xml</outputChangeLogFile>
                     <propertyFile>${liquibase.propertyFile}</propertyFile>
@@ -152,6 +152,18 @@
                     <driver>org.postgresql.Driver</driver>
                     <changeLogFile>src/main/resources/db/changelog/db.changelog-master.xml</changeLogFile>
                 </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.postgresql</groupId>
+                        <artifactId>postgresql</artifactId>
+                        <version>42.7.3</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.liquibase</groupId>
+                        <artifactId>liquibase-core</artifactId>
+                        <version>4.27.0</version>
+                    </dependency>
+                </dependencies>
             </plugin>
         </plugins>	
     </build>

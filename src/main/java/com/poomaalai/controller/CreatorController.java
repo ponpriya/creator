@@ -28,6 +28,7 @@ import com.poomaalai.entity.Creator;
 import com.poomaalai.security.JwtTokenProvider;
 import com.poomaalai.service.CreatorService;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
 @RestController
@@ -58,7 +59,7 @@ public class CreatorController {
         return creatorService.getAllCreators();
     }
     @PostMapping("/api/register")
-    public ResponseEntity<RegisterCreatorDto> registerCreator(@Valid @RequestBody RegisterCreatorDto registerCreatorDto) {
+    public ResponseEntity<RegisterCreatorDto> registerCreator(@Valid@RequestBody RegisterCreatorDto registerCreatorDto, HttpServletRequest request) {
         logger.info("Registration attempt for email");
         // Normalize email first
         String email = registerCreatorDto.getEmail() == null ? null : registerCreatorDto.getEmail().trim().toLowerCase();
@@ -72,10 +73,15 @@ public class CreatorController {
         if (!registerCreatorDto.getPassword().equals(registerCreatorDto.getConfirmPassword())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(registerCreatorDto);
         }
-        logger.info("Creating new creator with email");
-        creatorService.registerNewCreator(registerCreatorDto);
+        
+        // Get client IP address
+        String clientIp = getClientIpAddress(request);
+        logger.info("Creating new creator with email from IP: {}", clientIp);
+        creatorService.registerNewCreator(registerCreatorDto, clientIp);
         if (creatorService.getCreatorByEmail(email) != null) {
             logger.info("Creator registered successfully with email");
+            registerCreatorDto.setPassword(null);
+            registerCreatorDto.setConfirmPassword(null);    
             return ResponseEntity.ok(registerCreatorDto);
         }else{
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(registerCreatorDto);
@@ -114,7 +120,7 @@ public class CreatorController {
         LoginResponseDto response = new LoginResponseDto(
             token,
             creator.getEmail(),
-            creator.getName(),
+            creator.getFirstName() + " " + creator.getLastName(),
             expiresIn
         );
 
@@ -133,5 +139,30 @@ public class CreatorController {
         return ResponseEntity.ok(response);
     }
     
+    private String getClientIpAddress(HttpServletRequest request) {
+        String xForwardedFor = request.getHeader("X-Forwarded-For");
+        if (xForwardedFor != null && !xForwardedFor.isEmpty()) {
+            String ip = xForwardedFor.split(",")[0].trim();
+            logger.info("IP from X-Forwarded-For: {}", ip);
+            return normalizeLocalhost(ip);
+        }
+        String xRealIp = request.getHeader("X-Real-IP");
+        if (xRealIp != null && !xRealIp.isEmpty()) {
+            logger.info("IP from X-Real-IP: {}", xRealIp);
+            return normalizeLocalhost(xRealIp);
+        }
+        String remoteAddr = request.getRemoteAddr();
+        logger.info("IP from RemoteAddr: {}", remoteAddr);
+        return normalizeLocalhost(remoteAddr);
+    }
+    
+    private String normalizeLocalhost(String ip) {
+        if (ip == null) return "127.0.0.1";
+        // Normalize IPv6 localhost to IPv4
+        if (ip.equals("0:0:0:0:0:0:0:1") || ip.equals("::1")) {
+            return "127.0.0.1";
+        }
+        return ip;
+    }
 }
 
