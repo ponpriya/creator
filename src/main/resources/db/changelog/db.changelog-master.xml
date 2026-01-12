@@ -1,0 +1,95 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet author="priar (generated)" id="1766000969431-1">
+        <createTable remarks="Creator" tableName="creator">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="creator_pkey"/>
+            </column>
+            <column name="address" type="VARCHAR(255)"/>
+            <column name="phone" type="VARCHAR(255)"/>
+            <column name="zipcode" type="VARCHAR(255)"/>
+            <column name="email" type="VARCHAR(255)"/>
+            <column name="first_name" type="VARCHAR(255)"/>
+            <column name="last_name" type="VARCHAR(255)"/>
+            <column name="password" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="priar (generated)" id="1766000969431-2">
+        <createTable tableName="creator_roles">
+            <column name="creator_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="creator_roles_pkey"/>
+            </column>
+            <column name="roles_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="creator_roles_pkey"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="priar (generated)" id="1766000969431-3">
+        <createTable tableName="creator_store">
+            <column autoIncrement="true" name="id" type="INTEGER">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="creator_store_pkey"/>
+            </column>
+            <column name="address" type="VARCHAR(255)"/>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="phone" type="VARCHAR(255)"/>
+            <column name="zipcode" type="VARCHAR(255)"/>
+            <column name="owner_id" type="BIGINT"/>
+            <column name="facebook_handle" type="VARCHAR(255)"/>
+            <column name="instagram_handle" type="VARCHAR(255)"/>
+            <column name="youtube_handle" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="priar (generated)" id="1766000969431-4">
+        <createTable tableName="role">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="role_pkey"/>
+            </column>
+            <column name="name" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="priar (generated)" id="1766000969431-5">
+        <addForeignKeyConstraint baseColumnNames="owner_id" baseTableName="creator_store" constraintName="fk8pin92coeut0444orpui9n00p" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="creator" validate="true"/>
+    </changeSet>
+    <changeSet author="priar (generated)" id="1766000969431-6">
+        <addForeignKeyConstraint baseColumnNames="creator_id" baseTableName="creator_roles" constraintName="fkestowiwvx2ee59ccl5p7ktj92" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="creator" validate="true"/>
+    </changeSet>
+    <changeSet author="priar (generated)" id="1766000969431-7">
+        <addForeignKeyConstraint baseColumnNames="roles_id" baseTableName="creator_roles" constraintName="fkfsnyewaturiog2g2sjfn7v10b" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="role" validate="true"/>
+    </changeSet>
+    
+    <!-- Add audit columns to creator table -->
+    <changeSet author="priar" id="1736271600000-1">
+        <addColumn tableName="creator">
+            <column name="created_by" type="VARCHAR(255)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="created_date" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_by" type="VARCHAR(255)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="last_modified_date" type="TIMESTAMP">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
+    
+    <!-- Add audit columns to creator_store table -->
+    <changeSet author="priar" id="1736271600000-2">
+        <addColumn tableName="creator_store">
+            <column name="created_by" type="VARCHAR(255)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="created_date" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_by" type="VARCHAR(255)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="last_modified_date" type="TIMESTAMP">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
+</databaseChangeLog>

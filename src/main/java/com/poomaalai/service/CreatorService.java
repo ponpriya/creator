@@ -1,6 +1,5 @@
 package com.poomaalai.service;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -71,10 +70,24 @@ public class CreatorService  implements UserDetailsService {
                 .collect(Collectors.toList());
         return creatorStoreDtos;
     }
-    public void registerNewCreator(RegisterCreatorDto registerCreatorDto) {
+    public void registerNewCreator(RegisterCreatorDto registerCreatorDto, String clientIp) {
+        if (creatorRepository.findByEmail(registerCreatorDto.getEmail()).isPresent()) {
+            throw new IllegalArgumentException("Creator with this email already exists.");
+        }
+        if (!registerCreatorDto.getPassword().equals(registerCreatorDto.getConfirmPassword())) {
+            throw new IllegalArgumentException("Password and Confirm Password do not match.");  
+        } 
         registerCreatorDto.setPassword(new BCryptPasswordEncoder().encode(registerCreatorDto.getPassword()));
+        registerCreatorDto.setConfirmPassword(new BCryptPasswordEncoder().encode(registerCreatorDto.getConfirmPassword()));
         Creator creator = mapper.map(registerCreatorDto, Creator.class);
-        creatorRepository.save(creator);
+        
+        // Set created_by to the client's IP address
+        String ipToSave = clientIp != null ? clientIp : "unknown";
+        creator.setCreatedBy(ipToSave);
+        System.out.println("Setting created_by to: " + ipToSave);
+        
+        Creator savedCreator = creatorRepository.save(creator);
+        System.out.println("Saved creator with created_by: " + savedCreator.getCreatedBy());
     }   
 
     @Override
@@ -83,9 +96,9 @@ public class CreatorService  implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + email));
 
         return org.springframework.security.core.userdetails.User.builder()
-                .username(creator.getEmail())
-                .password(creator.getPassword()) // The stored password is already Bcrypt-hashed
-                .authorities(Collections.emptyList())
-                .build();
+            .username(creator.getEmail())
+            .password(creator.getPassword()) // The stored password is already Bcrypt-hashed
+            .authorities(creator.getAuthorities())
+            .build();
     }
 }
