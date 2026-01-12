@@ -113,7 +113,7 @@ public class SecurityConfig{
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:8080","https://www.poomaalai.com","https://poomaalai-8b5b97a1-production.up.railway.app","https://creator-production-8455.up.railway.app"));
+        configuration.setAllowedOrigins(List.of("http://localhost:8080","https://www.poomaalai.com","https://poomaalai-8b5b97a1-production.up.railway.app","https://creator-production-8455.up.railway.app","https://api.poomaalai.com"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("Content-Type", "Authorization"));
         configuration.setAllowCredentials(true);

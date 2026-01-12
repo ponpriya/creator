@@ -32,7 +32,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
 @RestController
-@CrossOrigin(origins = {"http://localhost:8080","http://localhost:8081","https://www.poomaalai.com","https://creator-production-8455.up.railway.app","https://poomaalai-8b5b97a1-production.up.railway.app"},allowedHeaders={"Content-Type", "Authorization"},allowCredentials="true")
+@CrossOrigin(origins = {"http://localhost:8080","http://localhost:8081","https://www.poomaalai.com","https://creator-production-8455.up.railway.app","https://poomaalai-8b5b97a1-production.up.railway.app","https://api.poomaalai.com"},allowedHeaders={"Content-Type", "Authorization"},allowCredentials="true")
 @RequestMapping("/creator")
 public class CreatorController {
 
