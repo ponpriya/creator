@@ -5,6 +5,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +16,8 @@ import com.poomaalai.repository.CreatorStoreRepository;
 
 @Service
 public class CreatorStoreService {
+
+    private static final Logger logger = LoggerFactory.getLogger(CreatorStoreService.class);
 
     @Autowired
     private CreatorStoreRepository creatorStoreRepository;
@@ -54,7 +58,7 @@ public class CreatorStoreService {
     }
     public void addCreatorStore(CreatorStoreDto creatorStoreDto) {
         CreatorStore creatorStore = mapper.map(creatorStoreDto, CreatorStore.class);
-        System.out.println("Saving Creator Store for owner: " + creatorStore.getOwner());
+        logger.info("Saving Creator Store '{}' for owner: {}", creatorStore.getName(), creatorStore.getOwner().getEmail());
         creatorStoreRepository.save(creatorStore);
     }   
 
