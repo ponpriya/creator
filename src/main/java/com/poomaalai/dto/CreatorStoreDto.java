@@ -24,16 +24,18 @@ public class CreatorStoreDto{
     private String name;
 
     @NotBlank
-    @Size(max = 500)
-    @Pattern(regexp = "^[#.0-9a-zA-Z\\s,-]{5,500}$", message = "Invalid address")
+    @Size(max = 255)
+    @Pattern(regexp = "^[\\p{L}\\p{N}\\s.,'\\-#/()]+$", message = "Invalid address")
     private String address;
 
     @NotBlank
-    @Pattern(regexp = "[0-9\\-\\+\\(\\)\\s]{7,15}", message = "Invalid phone number")
+    @Size(min = 7, max = 20)
+    @Pattern(regexp = "^[+]?[0-9\\-\\(\\)\\s]{7,20}$", message = "Invalid phone number")
     private String phone;
 
     @NotBlank
-    @Pattern(regexp = "\\d{5}", message = "Zipcode must be 5 digits")
+    @Size(min = 3, max = 10)
+    @Pattern(regexp = "^[A-Za-z0-9\\s\\-]{3,10}$", message = "Invalid zipcode")
     private String zipcode;
 
     @JsonIgnore

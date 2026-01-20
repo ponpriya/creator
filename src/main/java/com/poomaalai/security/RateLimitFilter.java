@@ -7,6 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -27,11 +28,23 @@ public class RateLimitFilter extends OncePerRequestFilter {
     private static final Logger logger = LoggerFactory.getLogger(RateLimitFilter.class);
     private final Map<String, Bucket> buckets = new ConcurrentHashMap<>();
 
+    @Value("${rate.limit.enabled:true}")
+    private boolean rateLimitEnabled;
+
+    @Value("${rate.limit.capacity:100}")
+    private int capacity;
+
+    @Value("${rate.limit.refill.tokens:100}")
+    private int refillTokens;
+
+    @Value("${rate.limit.refill.duration:60}")
+    private long refillDuration;
+
     private Bucket resolveBucket(String key) {
         return buckets.computeIfAbsent(key, k -> {
-            // Allow 100 requests per minute per IP
-            Refill refill = Refill.intervally(100, Duration.ofMinutes(1));
-            Bandwidth limit = Bandwidth.classic(100, refill);
+            // Allow configurable requests per configurable duration per IP
+            Refill refill = Refill.intervally(refillTokens, Duration.ofSeconds(refillDuration));
+            Bandwidth limit = Bandwidth.classic(capacity, refill);
             return Bucket.builder().addLimit(limit).build();
         });
     }
@@ -39,6 +52,12 @@ public class RateLimitFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
+
+        // Skip rate limiting if disabled (e.g., in test environment)
+        if (!rateLimitEnabled) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         String ip = getClientIP(request);
         Bucket bucket = resolveBucket(ip);

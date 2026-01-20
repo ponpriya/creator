@@ -7,16 +7,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -65,29 +62,11 @@ public class CreatorStoreController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<String> addStore(@Valid @RequestBody CreatorStoreDto creatorStoreDto, @RequestHeader(value = "Authorization", required = false) String authHeader) {
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<String> addStore(@Valid @RequestBody CreatorStoreDto creatorStoreDto) {
 
       logger.info("Adding new Creator Store: {}", creatorStoreDto.getName());          
       
-      // Extract and validate Bearer token
-      if (authHeader != null && authHeader.startsWith("Bearer ")) {
-          String token = authHeader.substring(7);
-          if (jwtTokenProvider.validateToken(token)) {
-              String email = jwtTokenProvider.getEmailFromToken(token);
-              try {
-                  UserDetails userDetails = (UserDetails) creatorService.loadUserByUsername(email);
-                  UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
-                          userDetails, null, userDetails.getAuthorities());
-                  SecurityContextHolder.getContext().setAuthentication(auth);
-              } catch (UsernameNotFoundException ex) {
-                  logger.warn("Could not set security context from token: {}", ex.getMessage());
-                  return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized: User not found.");
-              }
-          } else {
-              return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized: Invalid or expired token.");
-          }
-      }
-
       // Get authenticated user
       Authentication auth = SecurityContextHolder.getContext().getAuthentication();
       logger.debug("Authenticated user: {}", auth != null ? auth.getName() : "none");

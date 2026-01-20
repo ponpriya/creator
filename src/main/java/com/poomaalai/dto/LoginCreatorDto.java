@@ -1,6 +1,5 @@
 package com.poomaalai.dto;
 
-import com.poomaalai.entity.Auditable;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

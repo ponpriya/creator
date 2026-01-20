@@ -11,23 +11,30 @@ public class RegisterCreatorDto {
 
     
     @NotBlank
-    @Pattern(regexp = "^[a-zA-Z0-9_]{3,15}$", message = "First name must be between 3 to 15 characters and can only contain letters, numbers, and underscores")
+     @Pattern(
+            regexp = "^[\\p{L}\\p{M}][\\p{L}\\p{M}\\s'\\-]{2,14}$",
+            message = "First name must be between 3 to 15 characters and can contain letters (including international), spaces, hyphens, and apostrophes")
     private String firstName;
 
     @NotBlank
-    @Pattern(regexp = "^[a-zA-Z0-9_]{3,15}$", message = "Last name must be between 3 to 15 characters and can only contain letters, numbers, and underscores")
+     @Pattern(
+            regexp = "^[\\p{L}\\p{M}][\\p{L}\\p{M}\\s'\\-]{2,14}$",
+            message = "Last name must be between 3 to 15 characters and can contain letters (including international), spaces, hyphens, and apostrophes")
     private String lastName;
 
     @NotBlank
-    @Pattern(regexp = "[0-9\\-\\+\\(\\)\\s]{7,15}", message = "Invalid phone number")
+    @Size(min = 7, max = 20)
+    @Pattern(regexp = "^[+]?[0-9\\-\\(\\)\\s]{7,20}$", message = "Invalid phone number")
     private String phone;
 
     @NotBlank
-    @Pattern(regexp = "^[#.0-9a-zA-Z\\s,-]+$", message = "Address must be between 3 to 15 characters and can only contain letters, numbers, and underscores")
+    @Size(min = 5, max = 500)
+    @Pattern(regexp = "^[\\p{L}\\p{N}\\s.,'\\-#/()]+$", message = "Invalid address")
     private String address;
 
     @NotBlank
-    @Pattern(regexp = "\\d{5}", message = "Zipcode must be 5 digits")
+    @Size(min = 3, max = 10)
+    @Pattern(regexp = "^[A-Za-z0-9\\s\\-]{3,10}$", message = "Invalid zipcode")
     private String zipcode;
 
     @NotBlank

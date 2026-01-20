@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -19,6 +21,7 @@ import com.poomaalai.repository.CreatorRepository;
 
 @SpringBootTest
 @Transactional
+@ActiveProfiles("test")
 public class RegisterControllerTest {
 
     @Autowired
@@ -32,7 +35,9 @@ public class RegisterControllerTest {
     @BeforeEach
     void setUp() {
         creatorRepository.deleteAll();
-        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac)
+                .apply(springSecurity())
+                .build();
     }
 
     @Test
@@ -74,7 +79,7 @@ public class RegisterControllerTest {
         existing.setPassword("hashedPassword");
         existing.setFirstName("Existing");
         existing.setLastName("User");
-        existing.setPhone("1234567890");
+        existing.setPhone("5551014000");
         existing.setAddress("123 Existing St");
         creatorRepository.save(existing);
 

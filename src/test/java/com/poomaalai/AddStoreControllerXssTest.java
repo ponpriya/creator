@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -19,6 +21,7 @@ import com.poomaalai.security.JwtTokenProvider;
 
 @SpringBootTest
 @Transactional
+@ActiveProfiles("test")
 public class AddStoreControllerXssTest {
 
     @Autowired
@@ -45,12 +48,14 @@ public class AddStoreControllerXssTest {
         c.setPassword(passwordEncoder.encode("password"));
         c.setFirstName("XSS");
         c.setLastName("Tester");
-        c.setPhone("1234567890");
+        c.setPhone("5551016000");
         c.setAddress("123 Test St");
         creatorRepository.save(c);
         
         jwtToken = jwtTokenProvider.generateToken("xss@test.com");
-        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac)
+                .apply(springSecurity())
+                .build();
     }
 
     @Test

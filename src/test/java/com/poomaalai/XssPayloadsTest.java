@@ -9,10 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -23,6 +25,7 @@ import com.poomaalai.security.JwtTokenProvider;
 
 @SpringBootTest
 @Transactional
+@ActiveProfiles("test")
 public class XssPayloadsTest {
 
     @Autowired
@@ -56,7 +59,9 @@ public class XssPayloadsTest {
     void setUp() {
         creatorStoreRepository.deleteAll();
         creatorRepository.deleteAll();
-        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac)
+                .apply(springSecurity())
+                .build();
 
         // Create a test user
         Creator creator = new Creator();
@@ -64,7 +69,7 @@ public class XssPayloadsTest {
         creator.setPassword(passwordEncoder.encode("StrongPass123!"));
         creator.setFirstName("Fuzz");
         creator.setLastName("Tester");
-        creator.setPhone("1234567890");
+        creator.setPhone("5551012000");
         creator.setAddress("123 Fuzz St");      
         creatorRepository.save(creator);
 

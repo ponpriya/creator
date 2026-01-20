@@ -5,6 +5,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -31,7 +33,12 @@ public class CreatorService  implements UserDetailsService {
     private CreatorStoreRepository creatorStoreRepository;
 
     @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
+
+    @Autowired
     private ModelMapper mapper;
+
+    private static final Logger logger = LoggerFactory.getLogger(CreatorService.class);
 
     public CreatorService(CreatorRepository creatorRepository) {
         this.creatorRepository = creatorRepository;
@@ -39,7 +46,11 @@ public class CreatorService  implements UserDetailsService {
 
     public CreatorDto getCreatorById(int id) {
         Optional<Creator> creator = creatorRepository.findById(id);
-        CreatorDto creatorDto= mapper.map(creator, CreatorDto.class);
+        if (creator.isEmpty()) {
+            return null;
+        }
+        CreatorDto creatorDto = mapper.map(creator.get(), CreatorDto.class);
+        creatorDto.setPassword(null); // Explicitly clear password
         return creatorDto;
     }
 
@@ -50,7 +61,11 @@ public class CreatorService  implements UserDetailsService {
     public List<CreatorDto> getAllCreators() {
         List<Creator> creators = creatorRepository.findAll();
         List<CreatorDto> creatorDtos = creators.stream()
-                .map(creator -> mapper.map(creator, CreatorDto.class))
+                .map(creator -> {
+                    CreatorDto dto = mapper.map(creator, CreatorDto.class);
+                    dto.setPassword(null); // Explicitly clear password
+                    return dto;
+                })
                 .collect(Collectors.toList());
         return creatorDtos;
     }
@@ -77,17 +92,16 @@ public class CreatorService  implements UserDetailsService {
         if (!registerCreatorDto.getPassword().equals(registerCreatorDto.getConfirmPassword())) {
             throw new IllegalArgumentException("Password and Confirm Password do not match.");  
         } 
-        registerCreatorDto.setPassword(new BCryptPasswordEncoder().encode(registerCreatorDto.getPassword()));
-        registerCreatorDto.setConfirmPassword(new BCryptPasswordEncoder().encode(registerCreatorDto.getConfirmPassword()));
+        registerCreatorDto.setPassword(passwordEncoder.encode(registerCreatorDto.getPassword()));
         Creator creator = mapper.map(registerCreatorDto, Creator.class);
         
         // Set created_by to the client's IP address
         String ipToSave = clientIp != null ? clientIp : "unknown";
         creator.setCreatedBy(ipToSave);
-        System.out.println("Setting created_by to: " + ipToSave);
+        logger.info("Setting created_by to: " + ipToSave);
         
         Creator savedCreator = creatorRepository.save(creator);
-        System.out.println("Saved creator with created_by: " + savedCreator.getCreatedBy());
+        logger.info("Saved creator with created_by: " + savedCreator.getCreatedBy());
     }   
 
     @Override

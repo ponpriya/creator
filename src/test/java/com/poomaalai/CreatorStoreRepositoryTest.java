@@ -13,9 +13,11 @@ import com.poomaalai.entity.Creator;
 import com.poomaalai.entity.CreatorStore;
 import com.poomaalai.repository.CreatorRepository;
 import com.poomaalai.repository.CreatorStoreRepository;
+import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
 @Transactional
+@ActiveProfiles("test")
 public class CreatorStoreRepositoryTest {
 
     @Autowired
@@ -36,7 +38,7 @@ public class CreatorStoreRepositoryTest {
         c.setEmail("repo@test.com");
         c.setFirstName("Repo");
         c.setLastName("Test");
-        c.setPhone("1234567890");
+        c.setPhone("5551015000");
         c.setAddress("123 Repo St");
         c.setPassword("password");
         creatorRepository.save(c);

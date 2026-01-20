@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -20,6 +22,7 @@ import com.poomaalai.security.JwtTokenProvider;
 
 @SpringBootTest
 @Transactional
+@ActiveProfiles("test")
 public class AddAndDisplayIntegrationTest {
 
     @Autowired
@@ -40,7 +43,9 @@ public class AddAndDisplayIntegrationTest {
     void setUp() {
         creatorStoreRepository.deleteAll();
         creatorRepository.deleteAll();
-        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac)
+                .apply(springSecurity())
+                .build();
     }
 
     @Test

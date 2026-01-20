@@ -5,12 +5,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -21,6 +23,7 @@ import com.poomaalai.repository.CreatorStoreRepository;
 
 @SpringBootTest
 @Transactional
+@ActiveProfiles("test")
 public class SearchControllerXssTest {
 
     @Autowired
@@ -36,15 +39,14 @@ public class SearchControllerXssTest {
 
     @BeforeEach
     void setUp() {
-        creatorRepository.deleteAll();
         creatorStoreRepository.deleteAll();
-        
+        creatorRepository.deleteAll();
         Creator owner = new Creator();
         owner.setEmail("testuser@example.com");
         owner.setPassword("password");
         owner.setFirstName("Test");
         owner.setLastName("User");
-        owner.setPhone("1234567890");
+        owner.setPhone("5551013000");
         owner.setAddress("123 Test St");
         owner = creatorRepository.save(owner);
         
@@ -53,9 +55,11 @@ public class SearchControllerXssTest {
         s.setName("<script>alert('x')</script>");
         s.setAddress("<img src=x onerror=alert(1)>");
         s.setZipcode("99999");
-        s.setPhone("1234567890");
+        s.setPhone("5551013001");
         creatorStoreRepository.save(s);
-        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac)
+                .apply(springSecurity())
+                .build();
     }
 
     @Test

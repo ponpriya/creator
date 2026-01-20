@@ -92,4 +92,9 @@
             </column>
         </addColumn>
     </changeSet>
+    
+    <!-- Add unique constraint to email column in creator table -->
+    <changeSet author="priar" id="1737297600000-1">
+        <addUniqueConstraint columnNames="email" constraintName="uk_creator_email" tableName="creator"/>
+    </changeSet>
 </databaseChangeLog>

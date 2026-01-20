@@ -51,6 +51,9 @@ public class CreatorController {
     public ResponseEntity<CreatorDto> getCreatorById(@PathVariable int id) {   
         
         CreatorDto creatorDto = creatorService.getCreatorById(id);
+        if (creatorDto == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
         return ResponseEntity.status(HttpStatus.OK).body(creatorDto);
         
     }
@@ -123,17 +126,6 @@ public class CreatorController {
             creator.getFirstName() + " " + creator.getLastName(),
             expiresIn
         );
-
-        // Set authentication in SecurityContext for this request
-        try {
-            UserDetails userDetails = (UserDetails) creatorService.loadUserByUsername(email);
-            UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
-                userDetails, null, userDetails.getAuthorities());
-            SecurityContextHolder.getContext().setAuthentication(auth);
-            logger.debug("Security context set ");
-        } catch (UsernameNotFoundException ex) {
-            logger.warn("Could not set security context: {}", ex.getMessage());
-        }
 
         logger.info("Login successful");
         return ResponseEntity.ok(response);
