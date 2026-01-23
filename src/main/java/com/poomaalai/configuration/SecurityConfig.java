@@ -1,7 +1,11 @@
 package com.poomaalai.configuration;
+import java.util.Arrays;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.AuditorAware;
@@ -29,6 +33,9 @@ import com.poomaalai.service.CreatorService;
 @EnableMethodSecurity
 public class SecurityConfig{
 
+    @Value("${cors.allowed-origins}")
+    private String allowedOrigins;
+
     @Autowired
     private CreatorService creatorService;
 
@@ -43,6 +50,8 @@ public class SecurityConfig{
 
     @Autowired
     private CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+
+    private static final Logger logger = LoggerFactory.getLogger(SecurityConfig.class);
  
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -74,6 +83,7 @@ public class SecurityConfig{
                     "/creator/api/login",
                     "/creator/logout",
                     "/creator-store/search",
+                    "/creator-store/search-radius",
                     "/favicon.ico",
                     "/css/**",
                     "/js/**",
@@ -120,7 +130,8 @@ public class SecurityConfig{
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:8080","https://www.poomaalai.com","https://poomaalai-8b5b97a1-production.up.railway.app","https://creator-production-8455.up.railway.app","https://api.poomaalai.com"));
+        configuration.setAllowedOrigins(Arrays.asList(allowedOrigins.split(",")));
+        logger.info("Allowed origins: {}", configuration.getAllowedOrigins());
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("Content-Type", "Authorization"));
         configuration.setAllowCredentials(true);

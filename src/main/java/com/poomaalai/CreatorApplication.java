@@ -23,6 +23,7 @@ public class CreatorApplication {
 	public static void main(String[] args) {
 		ApplicationContext context = SpringApplication.run(CreatorApplication.class, args);
 		
+		
 		// Log all registered endpoints
 		logger.info("========== Registered Endpoints ==========");
 		RequestMappingHandlerMapping requestMappingHandlerMapping = context.getBean("requestMappingHandlerMapping", RequestMappingHandlerMapping.class);
