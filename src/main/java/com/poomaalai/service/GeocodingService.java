@@ -107,7 +107,7 @@ public class GeocodingService {
             logger.error("Geocoding interrupted", e);
             return null;
         } catch (Exception e) {
-            logger.error("Error with google geocoding: {}", e.getMessage());
+            logger.error("Error with nominatim geocoding: {}", e.getMessage());
             return null;
         }
     }
