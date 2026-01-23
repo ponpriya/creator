@@ -23,6 +23,13 @@ public class CreatorApplication {
 	public static void main(String[] args) {
 		ApplicationContext context = SpringApplication.run(CreatorApplication.class, args);
 		
+		// Log active profiles
+		String[] activeProfiles = context.getEnvironment().getActiveProfiles();
+		logger.info("========== Active Profiles ==========");
+		for (String profile : activeProfiles) {
+			logger.info("Profile: {}", profile);
+		}
+		logger.info("=====================================");
 		
 		// Log all registered endpoints
 		logger.info("========== Registered Endpoints ==========");
