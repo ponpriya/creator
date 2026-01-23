@@ -38,6 +38,10 @@ public class CreatorStoreDto{
     @Pattern(regexp = "^[A-Za-z0-9\\s\\-]{3,10}$", message = "Invalid zipcode")
     private String zipcode;
 
+    private Double latitude;
+
+    private Double longitude;
+
     @JsonIgnore
     private Creator owner;
 

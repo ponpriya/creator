@@ -97,4 +97,16 @@
     <changeSet author="priar" id="1737297600000-1">
         <addUniqueConstraint columnNames="email" constraintName="uk_creator_email" tableName="creator"/>
     </changeSet>
+    
+    <!-- Add latitude and longitude columns to creator_store table -->
+    <changeSet author="priar" id="1737597600000-1">
+        <addColumn tableName="creator_store">
+            <column name="latitude" type="DOUBLE PRECISION">
+                <constraints nullable="true"/>
+            </column>
+            <column name="longitude" type="DOUBLE PRECISION">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

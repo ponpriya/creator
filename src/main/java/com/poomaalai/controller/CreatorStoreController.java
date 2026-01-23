@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,7 +27,6 @@ import jakarta.validation.Valid;
 
 
 @RestController
-@CrossOrigin(origins = {"http://localhost:8080","http://localhost:8081","https://www.poomaalai.com","https://creator-production-8455.up.railway.app","https://poomaalai-8b5b97a1-production.up.railway.app","https://api.poomaalai.com"},allowedHeaders={"Content-Type", "Authorization"},allowCredentials="true")
 @RequestMapping("/creator-store")
 public class CreatorStoreController {
 
@@ -58,6 +56,27 @@ public class CreatorStoreController {
        }
         creatorStoreDtos = creatorStoreService.searchByZipcode(zipcode);
         logger.info("Found {} stores for zipcode: {}", creatorStoreDtos.size(), zipcode); 
+        return ResponseEntity.status(HttpStatus.OK).body(creatorStoreDtos);
+    }
+
+    @GetMapping("/search-radius")
+    public ResponseEntity<List<CreatorStoreDto>> searchByRadius(
+            @RequestParam(value = "zipcode") String zipcode,
+            @RequestParam(value = "radius", defaultValue = "10") int radiusMiles) {
+        
+        if (!ZIPCODE_PATTERN.matcher(zipcode).matches()) {
+            logger.warn("Invalid zipcode format: {}", zipcode);
+            return ResponseEntity.badRequest().build();
+        }
+        
+        if (radiusMiles < 0 || radiusMiles > 500) {
+            logger.warn("Invalid radius value: {}", radiusMiles);
+            return ResponseEntity.badRequest().build();
+        }
+        
+        List<CreatorStoreDto> creatorStoreDtos = creatorStoreService.searchByZipcodeAndRadius(zipcode, radiusMiles);
+        logger.info("Found {} stores within {} miles of zipcode: {}", 
+                   creatorStoreDtos.size(), radiusMiles, zipcode);
         return ResponseEntity.status(HttpStatus.OK).body(creatorStoreDtos);
     }
 

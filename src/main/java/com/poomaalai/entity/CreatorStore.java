@@ -35,6 +35,12 @@ public class CreatorStore extends Auditable {
     @Column(name = "zipcode")
     private String zipcode;
 
+    @Column(name = "latitude")
+    private Double latitude;
+
+    @Column(name = "longitude")
+    private Double longitude;
+
     @Column(name = "instagram_handle")
     private String instagramHandle;
 
